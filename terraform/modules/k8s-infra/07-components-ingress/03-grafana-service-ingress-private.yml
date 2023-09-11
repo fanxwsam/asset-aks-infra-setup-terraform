@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress-private
+  namespace: monitoring
+  annotations:    
+    # cert-manager.io/cluster-issuer: letsencrypt     
+  labels:
+    app: grafana-ingress
+spec:
+  ingressClassName: internal-nginx
+  rules:
+    - host: ${host}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix          
+            backend:
+              service:
+                name: prometheus-grafana
+                port:
+                  number: 80
+  tls:
+  - hosts:
+    - ${host}
+    secretName: grafana-cert-tsl

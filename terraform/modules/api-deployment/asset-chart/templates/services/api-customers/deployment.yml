@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-customers
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-customers
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: api-customers
+      labels:
+        app: api-customers
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      containers:
+        - name: api-customer2
+          image: {{.Values.asset.customers.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: azure
+          resources:
+            requests:
+              memory: {{.Values.asset.customers.memory }}
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: api-customers

@@ -1,0 +1,14 @@
+apiVersion: stackgres.io/v1
+kind: SGPostgresConfig
+metadata:
+  namespace: postgres-db-clu
+  name: postgres-14-config
+spec:
+  postgresVersion: "14"
+  postgresql.conf:
+    work_mem: '16MB'
+    shared_buffers: '1GB'
+    random_page_cost: '1.5'
+    password_encryption: 'scram-sha-256'
+    log_checkpoints: 'on'
+    jit: 'off'

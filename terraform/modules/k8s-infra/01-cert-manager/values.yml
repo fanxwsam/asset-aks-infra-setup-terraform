@@ -1,0 +1,16 @@
+# installCRDs: true
+# namespace:
+#   create: true
+#   name: cert-manager
+#   labels:
+#     cert-manager.io/disable-validation: true
+podAnnotations:
+  linkerd.io/inject: enabled
+nodeSelector:  
+  "app": system-apps
+webhook:
+  nodeSelector:
+    "app": system-apps
+cainjector:
+  nodeSelector:
+    "app": system-apps

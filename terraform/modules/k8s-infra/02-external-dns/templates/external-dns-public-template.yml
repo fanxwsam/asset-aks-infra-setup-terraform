@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns-public
+  namespace: kube-system
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+        app: system-apps
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        # image: k8s.gcr.io/external-dns/external-dns:v0.11.0
+        image: registry.k8s.io/external-dns/external-dns:v0.13.2
+        args:
+        - --source=service
+        - --source=ingress
+        - --provider=azure
+        - --txt-owner-id=${txt-owner-id}
+        - --domain-filter=${domain-filter}
+        - --azure-resource-group=${azure-resource-group-public}
+        #- --azure-resource-group=externaldns # (optional) use the DNS zones from the specific resource group
+        volumeMounts:
+        - name: azure-config-file
+          mountPath: /etc/kubernetes
+          readOnly: true
+      volumes:
+      - name: azure-config-file
+        secret:
+          secretName: azure-config-file

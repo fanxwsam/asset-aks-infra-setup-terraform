@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stackgres-ui-ingress-private
+  namespace: stackgres
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt
+  labels:
+    app: stackgres-operator-ui
+spec:
+  ingressClassName: internal-nginx
+  rules:
+    - host: stackgres-devuat.kubedev.link
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stackgres-restapi
+                port:
+                  number: 443
+  tls:
+  - hosts:
+    - stackgres-devuat.kubedev.link
+    secretName: stackgres-dashboard-rsa-cert

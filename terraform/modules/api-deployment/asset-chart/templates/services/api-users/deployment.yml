@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-users
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-users
+
+  template:
+    metadata:      
+      labels:
+        app: api-users
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      containers:
+        - name: api-users
+#          image: samuelest/bha-backend-api:1.0-SNAPSHOT
+          image: {{.Values.asset.users.image }}
+          # imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: azure
+            - name: database
+              valueFrom:
+                secretKeyRef:
+                  name: cosmos-db-secret
+                  key: database
+            - name: uri
+              valueFrom:
+                secretKeyRef:
+                  name: cosmos-db-secret
+                  key: uri                  
+            - name: key
+              valueFrom:
+                secretKeyRef:
+                  name: cosmos-db-secret
+                  key: key
+          resources:
+            requests:
+              memory: {{.Values.asset.users.memory }}
+   

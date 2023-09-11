@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-security
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-security
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: api-security
+      labels:
+        app: api-security
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      containers:
+        - name: api-security
+          image: {{.Values.asset.security.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: azure
+          resources:
+            requests:
+              memory: {{.Values.asset.security.memory }}
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: api-security

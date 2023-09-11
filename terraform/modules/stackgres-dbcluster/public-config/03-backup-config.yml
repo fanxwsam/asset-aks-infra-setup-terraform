@@ -1,0 +1,18 @@
+apiVersion: stackgres.io/v1beta1
+kind: SGObjectStorage
+metadata:
+  namespace: postgres-db-clu
+  name: azure-blob-backup
+spec:
+  type: 'azureBlob'
+  azureBlob:
+    bucket: 'stackgresdbbackup'
+#    path: databasebackup
+    azureCredentials:
+      secretKeySelectors:
+        storageAccount:
+          name: azure-blob-storage-creds
+          key: storage-account
+        accessKey:
+          name: azure-blob-storage-creds
+          key: access-key

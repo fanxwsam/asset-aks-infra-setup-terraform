@@ -1,0 +1,39 @@
+apiVersion: stackgres.io/v1
+kind: SGScript
+metadata:
+  name: sg-sample-db-script
+  namespace: postgres-db-clu
+spec:
+  managedVersions: true
+  continueOnError: false  
+  scripts:
+  - database: postgres
+    name: create-user
+    scriptFrom:
+      secretKeyRef:
+        key: create-user.sql
+        name: sample-db-database-user
+  - database: postgres
+    name: create-database
+    script: |
+      CREATE DATABASE apiusers WITH OWNER apiusersuser;
+  - database: apiusers
+    name: init-sample-db-database
+    scriptFrom:
+      configMapKeyRef:
+        key: complete-generated-database-sample-db.sql
+        name: sample-db-database-init
+  - database: postgres
+    name: grant-privs-sample-db
+    script: |
+      GRANT ALL PRIVILEGES ON DATABASE apiusers TO
+        apiusersuser;
+      GRANT CONNECT ON DATABASE apiusers TO
+        apiusersuser;
+  - database: apiusers
+    name: grant-privs-schema
+    script: |
+      GRANT ALL PRIVILEGES ON SCHEMA public TO 
+          apiusersuser;
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO 
+          apiusersuser;

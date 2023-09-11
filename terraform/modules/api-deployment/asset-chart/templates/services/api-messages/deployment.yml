@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-messages
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-messages
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: api-messages
+      labels:
+        app: api-messages
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      containers:
+        - name: api-messages
+          image: {{.Values.asset.messages.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8090
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: azure
+          resources:
+            requests:
+              memory: {{.Values.asset.messages.memory }}                
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: api-messages

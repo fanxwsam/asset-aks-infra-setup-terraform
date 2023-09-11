@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: asset-auth-ingress
+  namespace: {{ include "asset-chart.namespace" . }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+
+spec:
+  ingressClassName: nginx
+  rules:
+   -  host: {{.Values.asset.security.ingress.host }}
+      http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: api-security
+               port:
+                 number: 8000
+  tls:
+  - hosts:
+    - {{.Values.asset.security.ingress.host }}
+    secretName: asset-auth-ingress-cert-tsl
+

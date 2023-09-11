@@ -1,0 +1,16 @@
+apiVersion: stackgres.io/v1
+kind: SGInstanceProfile
+metadata:
+  namespace: postgres-db-clu
+  name: sg-instance-profile
+spec:
+  cpu: "100m"
+  memory: "400Mi"
+  containers:
+    backup.create-backup:
+      cpu: "200m"
+      memory: "400Mi"
+  initContainers:
+    backup.create-backup:
+      cpu: "200m"
+      memory: "400Mi"

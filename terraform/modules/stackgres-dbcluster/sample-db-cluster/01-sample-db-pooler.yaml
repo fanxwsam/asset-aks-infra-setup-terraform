@@ -1,0 +1,34 @@
+apiVersion: stackgres.io/v1
+kind: SGPoolingConfig
+metadata:
+  name: sample-db-pooler-config
+  namespace: postgres-db-clu
+spec:
+  pgBouncer:
+    pgbouncer.ini:
+      pgbouncer:
+        admin_users: ' pgbouncer_admin'
+        application_name_add_host: ' 1'
+        auth_query: ' SELECT usename, passwd FROM pg_shadow WHERE usename=$1'
+        auth_type: ' md5'
+        auth_user: ' authenticator'
+        default_pool_size: ' 1000'
+        ignore_startup_parameters: ' extra_float_digits'
+        listen_addr: ' 127.0.0.1'
+        max_client_conn: ' 1000'
+        max_db_connections: ' 0'
+        max_user_connections: ' 0'
+        pool_mode: ' session'
+        stats_users: ' pgbouncer_stats'
+      databases:
+        apiusers:
+          max_db_connections: 1000
+          pool_size: 20
+          dbname: 'apiusers'
+          reserve_pool: 5
+      users:
+        apiusersuser:
+          pool_mode: transaction
+          max_user_connections: 50
+
+

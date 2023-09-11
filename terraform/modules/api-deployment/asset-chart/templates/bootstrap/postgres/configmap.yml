@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: {{ include "asset-chart.namespace" . }}
+data:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-db-init-config
+  namespace: {{ include "asset-chart.namespace" . }}
+data:
+  postgres_db_init.sql: |-
+    DROP DATABASE IF EXISTS customer;
+    CREATE DATABASE customer;
+    DROP DATABASE IF EXISTS notifications;
+    create database notifications;
+    DROP DATABASE IF EXISTS fraud;
+    create database fraud;
+    DROP DATABASE IF EXISTS messages;
+    create database messages;

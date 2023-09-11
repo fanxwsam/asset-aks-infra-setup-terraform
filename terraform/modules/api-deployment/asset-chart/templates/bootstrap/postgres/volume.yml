@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{.Values.asset.pv}}
+  namespace: {{ include "asset-chart.namespace" . }}
+  #name: postgres-db-data
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: {{.Values.asset.storageclass}}
+  capacity:
+    storage: 5Gi
+  accessModes:
+      - ReadWriteMany
+  hostPath:
+      path: /mnt/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pc-volume-claim
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: postgres
+spec:
+  storageClassName: {{.Values.asset.storageclass}}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{.Values.asset.storageclass}}
+  # namespace: {{ include "asset-chart.namespace" . }}
+provisioner: kubernetes.io/azure-disk
+reclaimPolicy: Retain  # Default is Delete, recommended is retain
+volumeBindingMode: WaitForFirstConsumer # Default is Immediate, recommended is WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  storageaccounttype: Premium_LRS # or we can use Standard_LRS
+  kind: managed # Default is shared (Other two are managed and dedicated)

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: stackgres-cert-tsl
+  namespace: stackgres
+spec:
+  secretName: stackgres-cert-tsl
+  dnsNames:    
+    - ${host}
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  duration: 2160h0m0s
+  renewBefore: 360h0m0s

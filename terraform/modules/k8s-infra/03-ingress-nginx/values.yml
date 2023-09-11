@@ -1,0 +1,5 @@
+controller:
+  podAnnotations:
+    linkerd.io/inject: enabled
+  config:
+    proxy-body-size: "4096m"

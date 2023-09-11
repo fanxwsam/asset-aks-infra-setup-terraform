@@ -1,0 +1,5 @@
+# templates/namespace.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "asset-chart.namespace" . }}

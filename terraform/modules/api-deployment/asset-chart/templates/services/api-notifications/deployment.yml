@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-notifications
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-notifications
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: api-notifications
+      labels:
+        app: api-notifications
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      containers:
+        - name: api-notifications
+          image: {{.Values.asset.notifications.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8088
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: azure
+          resources:
+            requests:
+              memory: {{.Values.asset.notifications.memory }}   
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: api-notifications

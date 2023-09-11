@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apigw-ingress
+  namespace: {{ include "asset-chart.namespace" . }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+      
+spec:
+  ingressClassName: nginx
+  rules:
+   -  host: {{.Values.asset.apigw.ingress.host }}
+      http:
+       paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: apigw-service
+               port:
+                 number: 8083
+  tls:
+  - hosts:
+    - {{.Values.asset.apigw.ingress.host }}
+    secretName: apigw-ingress-cert-tsl

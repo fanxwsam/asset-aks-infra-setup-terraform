@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard-metrics-ingress-private
+  namespace: kubernetes-dashboard
+  annotations:    
+    # cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^(/dashboard)$ $1/ redirect;
+  labels:
+    app: kubernetes-dashboard-ingress
+spec:
+  ingressClassName: internal-nginx
+  rules:
+    - host: ${host}
+      http:
+        paths:
+          - path: /dashboard(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: kubernetes-dashboard
+                port:
+                  number: 443
+
+  tls:
+  - hosts:
+    - ${host}
+    secretName: dashboard-cert-tsl

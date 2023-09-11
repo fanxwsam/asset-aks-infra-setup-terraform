@@ -1,0 +1,58 @@
+namespace: ${app-namespace}
+
+asset:
+  storageclass: ${asset-sc}
+  pv: ${asset-pv}
+
+  zookeeper:
+    nodePort: ${zookeeper-nodeport}
+  
+  rabbitmq:
+    nodePort:
+      http: ${rabbitmq-nodeport-http}
+      amqp: ${rabbitmq-nodeport-amqp}
+
+  zipkin:
+    ingress:
+      host: ${zipkin-ingress-host}
+    memory: 576Mi
+
+  apigw:
+    image: samuelest/apigw:2.4
+    memory: 576Mi
+    ingress:
+      host: ${apigw-ingress-host}
+
+  eureka:    
+    image: samuelest/eureka-server:2.4
+    memory: 576Mi
+
+  security:    
+    image: samuelest/api-security:2.4
+    memory: 576Mi
+    ingress:
+      host: ${security-ingress-host}
+      
+  customers:    
+    image: samuelest/api-customers:2.4
+    memory: 576Mi
+  
+  fraud:    
+    image: samuelest/api-fraud:2.4
+    memory: 576Mi
+
+  messages:    
+    image: samuelest/api-messages:2.4
+    memory: 576Mi
+
+  notifications:
+    memory: 576Mi
+    image: samuelest/api-notifications:2.4
+    
+  users:
+    image: samuelest/api-users:2.4
+    memory: 576Mi
+    dataSource:
+      database: ${users-dataSource-database}
+      key: ${users-dataSource-key}
+      uri: ${users-dataSource-uri}

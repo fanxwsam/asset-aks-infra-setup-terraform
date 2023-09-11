@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-customers
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: api-customers
+spec:
+  selector:
+    app: api-customers
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: NodePort

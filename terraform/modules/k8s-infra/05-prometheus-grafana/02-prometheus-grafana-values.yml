@@ -1,0 +1,325 @@
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      app: system-apps
+    # storage:
+    #   volumeClaimTemplate:
+    #     spec:
+    #       storageClassName: cstor-mirror
+    #       accessModes: ["ReadWriteMany"]
+    #       resources:
+    #         requests:
+    #           storage: 10Gi
+
+prometheusOperator:
+  nodeSelector:
+    app: system-apps
+
+
+kube-state-metrics:
+  nodeSelector:
+    app: system-apps
+
+grafana:
+  nodeSelector:
+    app: system-apps
+  enabled: true
+  namespaceOverride: ""
+
+  ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
+  ##
+  forceDeployDatasources: false
+
+  ## ForceDeployDashboard Create dashboard configmap even if grafana deployment has been disabled
+  ##
+  forceDeployDashboards: false
+
+  ## Deploy default dashboards.
+  ##
+  defaultDashboardsEnabled: true
+
+  admin:
+    existingSecret: grafana-credentials-secret
+    userKey: admin-user
+    passwordKey: admin-password
+
+  persistence:
+    type: pvc
+    enabled: true
+    storageClassName: cstor-mirror
+    accessModes:
+    - ReadWriteOnce
+    size: 12Gi
+    finalizers:
+    - kubernetes.io/pvc-protection
+
+  ingress:
+    ## If true, Grafana Ingress will be created
+    ##
+    enabled: false
+
+    ## Annotations for Grafana Ingress
+    ##
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+    ## Labels to be added to the Ingress
+    ##
+    labels: {}
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enable.
+    ##
+    # hosts:
+    #   - grafana.domain.com
+    hosts: []
+
+    ## Path for grafana ingress
+    path: /
+
+    ## TLS configuration for grafana Ingress
+    ## Secret must be manually created in the namespace
+    ##
+    tls: []
+    # - secretName: grafana-general-tls
+    #   hosts:
+    #   - grafana.example.com
+
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+
+      ## Annotations for Grafana dashboard configmaps
+      ##
+      annotations: {}
+      multicluster:
+        global:
+          enabled: false
+        etcd:
+          enabled: false
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+
+      ## URL of prometheus datasource
+      ##
+      # url: http://prometheus-stack-prometheus:9090/
+
+      # If not defined, will use prometheus.prometheusSpec.scrapeInterval or its default
+      # defaultDatasourceScrapeInterval: 15s
+
+      ## Annotations for Grafana datasource configmaps
+      ##
+      annotations: {}
+
+      ## Create datasource for each Pod of Prometheus StatefulSet;
+      ## this uses headless service `prometheus-operated` which is
+      ## created by Prometheus Operator
+      ## ref: https://git.io/fjaBS
+      createPrometheusReplicasDatasources: false
+      label: grafana_datasource
+
+  extraConfigmapMounts: []
+  # - name: certs-configmap
+  #   mountPath: /etc/grafana/ssl/
+  #   configMap: certs-configmap
+  #   readOnly: true
+
+  ## Configure additional grafana datasources (passed through tpl)
+  ## ref: http://docs.grafana.org/administration/provisioning/#datasources
+  additionalDataSources: []
+  # - name: prometheus-sample
+  #   access: proxy
+  #   basicAuth: true
+  #   basicAuthPassword: pass
+  #   basicAuthUser: daco
+  #   editable: false
+  #   jsonData:
+  #       tlsSkipVerify: true
+  #   orgId: 1
+  #   type: prometheus
+  #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
+  #   version: 1
+
+  ## Passed to grafana subchart and used by servicemonitor below
+  ##
+  service:
+    type: NodePort
+    portName: service
+
+  ## If true, create a serviceMonitor for grafana
+  ##
+  serviceMonitor:
+    ## Scrape interval. If not set, the Prometheus default scrape interval is used.
+    ##
+    interval: ""
+    selfMonitor: true
+
+    # Path to use for scraping metrics. Might be different if server.root_url is set
+    # in grafana.ini
+    path: "/metrics"
+
+    ## Metric relabel configs to apply to samples before ingestion.
+    ##
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    #   relabel configs to apply to samples before ingestion.
+    ##
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
+
+
+
+## Component scraping etcd
+##
+kubeEtcd:
+  enabled: true
+
+  ## If your etcd is not deployed as a pod, specify IPs it can be found on
+  ##
+  endpoints: []
+  # - 10.141.4.22
+  # - 10.141.4.23
+  # - 10.141.4.24
+
+  ## Etcd service. If using kubeEtcd.endpoints only the port and targetPort are used
+  ##
+  service:
+    enabled: true
+    port: 2379
+    targetPort: 2379
+    # selector:
+    #   component: etcd
+
+
+
+## Component scraping kube scheduler
+##
+kubeScheduler:
+  enabled: true
+
+  ## If your kube scheduler is not deployed as a pod, specify IPs it can be found on
+  ##
+  endpoints: []
+  # - 10.141.4.22
+  # - 10.141.4.23
+  # - 10.141.4.24
+
+  ## If using kubeScheduler.endpoints only the port and targetPort are used
+  ##
+  service:
+    enabled: true
+    port: 10251
+    targetPort: 10251
+    # selector:
+    #   component: kube-scheduler
+
+  serviceMonitor:
+    enabled: true
+    ## Scrape interval. If not set, the Prometheus default scrape interval is used.
+    ##
+    interval: ""
+    ## proxyUrl: URL of a proxy that should be used for scraping.
+    ##
+    proxyUrl: ""
+    ## Enable scraping kube-scheduler over https.
+    ## Requires proper certs (not self-signed) and delegated authentication/authorization checks
+    ##
+    https: false
+
+    ## Skip TLS certificate validation when scraping
+    insecureSkipVerify: null
+
+    ## Name of the server to use when validating TLS certificate
+    serverName: null
+
+    ## Metric relabel configs to apply to samples before ingestion.
+    ##
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    #   relabel configs to apply to samples before ingestion.
+    ##
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
+
+
+## Deploy a Prometheus instance
+##
+prometheus:
+  prometheusSpec:
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    nodeSelector:
+      app: system-apps
+    storageSpec:
+    ## Using PersistentVolumeClaim
+    ##
+      volumeClaimTemplate:
+        metadata:
+          name: persisted
+        spec:
+          storageClassName: cstor-mirror
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+
+    replicas: 1
+
+    ## EXPERIMENTAL: Number of shards to distribute targets onto.
+    ## Number of replicas multiplied by shards is the total number of Pods created.
+    ## Note that scaling down shards will not reshard data onto remaining instances, it must be manually moved.
+    ## Increasing shards will not reshard data either but it will continue to be available from the same instances.
+    ## To query globally use Thanos sidecar and Thanos querier or remote write data to a central location.
+    ## Sharding is done on the content of the `__address__` target meta-label.
+    ##
+    shards: 1
+
+    ## Log level for Prometheus be configured in
+    ##
+    logLevel: info
+
+    ## Log format for Prometheus be configured in
+    ##
+    logFormat: logfmt
+   
+
+    ## Resource limits & requests
+    ##
+    resources: {}
+    # requests:
+    #   memory: 400Mi
+
+    ## Prometheus StorageSpec for persistent data
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+    ##
+
+
+    ## Using tmpfs volume
+    ##
+    #  emptyDir:
+    #    medium: Memory
+
+    # Additional volumes on the output StatefulSet definition.
+    volumes: []
+
+    # Additional VolumeMounts on the output StatefulSet definition.
+    volumeMounts: []

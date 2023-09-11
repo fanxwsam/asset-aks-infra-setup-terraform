@@ -1,0 +1,84 @@
+apiVersion: stackgres.io/v1
+kind: SGCluster
+metadata:
+  name: sample-db
+  namespace: postgres-db-clu
+spec:
+  configurations:    
+    sgBackupConfig: azure-blob-backup
+    # sgPoolingConfig: default-pooling-config
+    sgPoolingConfig: sample-db-pooler-config
+    sgPostgresConfig: postgres-14-config
+  managedSql:      
+    scripts:
+      - sgScript: sg-sample-db-script
+  instances: 2
+  sgInstanceProfile: sg-instance-profile
+  nonProductionOptions:
+    disableClusterPodAntiAffinity: true
+  pods:
+    persistentVolume:
+      size: 5Gi
+      storageClass: cstor-mirror
+    scheduling:
+      nodeSelector:
+        app: dbcluster-apps
+      backup:
+        nodeSelector:
+          app: dbcluster-apps        
+  postgres:
+    extensions:
+      - name: uuid-ossp
+        publisher: com.ongres
+        repository: https://extensions.stackgres.io/postgres/repository
+        version: '1.1'
+      - name: timescaledb
+        publisher: com.ongres
+        repository: https://extensions.stackgres.io/postgres/repository
+        version: 2.5.2
+      - name: pgbouncer_fdw
+        publisher: com.ongres
+        repository: https://extensions.stackgres.io/postgres/repository
+        version: '0.2'
+      - name: pg_monitoring
+        publisher: com.ongres
+        repository: https://extensions.stackgres.io/postgres/repository
+        version: '0.1'
+    flavor: vanilla
+    version: '14.4'
+  postgresServices:
+    primary:
+      enabled: true
+      # type: LoadBalancer
+      type: ClusterIP
+    replicas:
+      enabled: true
+      # type: LoadBalancer
+      type: ClusterIP
+  prometheusAutobind: true
+  replication:
+    mode: async
+    role: ha-read
+  
+    
+  toInstallPostgresExtensions:
+    - name: uuid-ossp
+      postgresVersion: '14.4'
+      publisher: com.ongres
+      repository: https://extensions.stackgres.io/postgres/repository
+      version: '1.1'
+    - name: timescaledb
+      postgresVersion: '14'
+      publisher: com.ongres
+      repository: https://extensions.stackgres.io/postgres/repository
+      version: 2.5.2
+    - name: pgbouncer_fdw
+      postgresVersion: '14'
+      publisher: com.ongres
+      repository: https://extensions.stackgres.io/postgres/repository
+      version: '0.2'
+    - name: pg_monitoring
+      postgresVersion: '14'
+      publisher: com.ongres
+      repository: https://extensions.stackgres.io/postgres/repository
+      version: '0.1'

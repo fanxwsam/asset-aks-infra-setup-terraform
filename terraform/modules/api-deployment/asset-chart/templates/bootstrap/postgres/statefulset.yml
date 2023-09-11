@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: {{ include "asset-chart.namespace" . }}
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      name: postgres
+      labels:
+        app: postgres
+      annotations:
+        linkerd.io/inject: enabled        
+    spec:
+      nodeSelector:
+        app: api-apps    
+      volumes:
+        - name: postgres
+          persistentVolumeClaim:
+            claimName: postgres-pc-volume-claim
+        - name: postgres-db-init-config
+          configMap:
+            name: postgres-db-init-config
+      containers:
+        - name: postgres
+          image: postgres
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgres
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-db-init-config
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: postgres
