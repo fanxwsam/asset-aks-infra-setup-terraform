@@ -45,6 +45,7 @@ data "template_file" "asset_chart_template" {
           zipkin-ingress-host = var.zipkin-ingress-host
           apigw-ingress-host = var.apigw-ingress-host
           security-ingress-host = var.security-ingress-host
+          image-version = var.image-version
           users-dataSource-database = var.users-dataSource-database
           users-dataSource-key = var.users-dataSource-key
           users-dataSource-uri = var.users-dataSource-uri

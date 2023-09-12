@@ -43,6 +43,11 @@ variable "security-ingress-host" {
   default     = "auth-int.samsassets.com"
 }
 
+variable "image-version" {
+  type        = string  
+  default     = "2.5"
+}
+
 variable "users-dataSource-database" {
   type        = string  
   default     = "dGthaGlkYg=="

@@ -18,39 +18,39 @@ asset:
     memory: 576Mi
 
   apigw:
-    image: samuelest/apigw:2.4
+    image: "samuelest/apigw:${image-version}"
     memory: 576Mi
     ingress:
       host: ${apigw-ingress-host}
 
   eureka:    
-    image: samuelest/eureka-server:2.4
+    image: "samuelest/eureka-server:${image-version}"
     memory: 576Mi
 
   security:    
-    image: samuelest/api-security:2.4
+    image: "samuelest/api-security:${image-version}"
     memory: 576Mi
     ingress:
       host: ${security-ingress-host}
       
   customers:    
-    image: samuelest/api-customers:2.4
+    image: "samuelest/api-customers:${image-version}"
     memory: 576Mi
   
   fraud:    
-    image: samuelest/api-fraud:2.4
+    image: "samuelest/api-fraud:${image-version}"
     memory: 576Mi
 
   messages:    
-    image: samuelest/api-messages:2.4
+    image: "samuelest/api-messages:${image-version}"
     memory: 576Mi
 
   notifications:
     memory: 576Mi
-    image: samuelest/api-notifications:2.4
+    image: "samuelest/api-notifications:${image-version}"
     
   users:
-    image: samuelest/api-users:2.4
+    image: "samuelest/api-users:${image-version}"
     memory: 576Mi
     dataSource:
       database: ${users-dataSource-database}

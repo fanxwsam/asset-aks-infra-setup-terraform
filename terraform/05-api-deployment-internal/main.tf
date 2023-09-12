@@ -28,7 +28,8 @@ module "api-deployment" {
   zipkin-ingress-host = "zipkin-int.samsassets.com"
   apigw-ingress-host = "api-int.samsassets.com"
   security-ingress-host = "auth-int.samsassets.com"
-  users-dataSource-database = "dGthaGlkYg=="
-  users-dataSource-key = "TTRWNXJXWHpBZFl2MFQzaDA2Y0JNSXQ0a0VmYlhNaTR2VWU0d2x4YjFUMlN0OTcybVA3YVpuOGNZcmV1ZkpWdG4wZXpCSHp4YWlsVEFDRGJJVDFQdWc9PQ=="
-  users-dataSource-uri = "aHR0cHM6Ly9haGktYmhhLWNvc21vcy1kZXYuZG9jdW1lbnRzLmF6dXJlLmNvbTo0NDMv"
+  image-version = "2.5"
+  users-dataSource-database = "YXNzZXQtZGVtbw=="
+  users-dataSource-key = "TUZnaXBJNnA5d2RLdExuZUxVUkpIMHV4Q1NYaExKMHV2ZjZNMzdFaUlXRjRTclI1RU1lWUVuQklZUXlpUlVTc21FNFJCTkJqWTl4ZUFDRGJ4WWtteHc9PQ=="
+  users-dataSource-uri = "aHR0cHM6Ly9hc3NldC5kb2N1bWVudHMuYXp1cmUuY29tOjQ0My8="
 }
