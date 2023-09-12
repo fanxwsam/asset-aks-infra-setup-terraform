@@ -12,6 +12,9 @@
 <br><br>
 ![Image](/doc-materials/images/prod-arch-01.png)
 
+## Architecture - Services Relationships
+![Image](/doc-materials/images/service-architecture.png)
+
 ## Architecture - Networking
 - Kubernetes System Components installed on node pool 'system' which is the default node pool of AKS. They are labeled with 'app:system-apps'
 - APIs deployed on 'user' node pool - labeled with 'app:api-apps'
