@@ -32,5 +32,5 @@ kubectl apply -f ingress-linkerd-web.yml
 ### test the dashboard
 linkerd-asset.kubedev.link -->
 
-### Regerence
+### Reference
 https://linkerd.io/2.12/getting-started/
