@@ -23,7 +23,7 @@ linkerd check
 kubectl apply -f .\linkerd-viz.yml
 
 # test Linkerd Viz
-linkerd dashboard
+linkerd viz dashboard
 ```
 
 <!-- ### After successfully instally Cert Manager, run command below

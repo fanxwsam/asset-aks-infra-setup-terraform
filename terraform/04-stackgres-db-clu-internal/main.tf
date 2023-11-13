@@ -33,7 +33,7 @@ module "stackgres-dbcluster" {
 
   #!IMPORTANT: copy the name which created in '01-cloud-infra-internal'
   #The name is Azure Global Unique, so it is generated with a random ID
-  storage_account_name = "databackinternald1d36f85"
+  storage_account_name = "databackinternalf08fe760"
 }
 
 
